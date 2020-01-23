@@ -1,0 +1,47 @@
+meta:
+  mkdocs:
+    destination:
+      - "builders/snaps/patch-requests.md"
+
+  name: K8s patch requests
+  description: Request K8s snap patches
+  long-description: |
+    Provide the ability for engineers to request patched versions of our published K8s Snaps.
+
+    ## Requestor
+
+    ### Create tarball of patches
+
+    - The patches must be numbered in order of applied
+    - They must be applicable with `git apply --stat`
+    - All patches must be in a compressed tarball that will be attached to a Launchpad bug
+
+    ### Create Launchpad Bug
+
+    https://launchpad.net/charmed-kubernetes-testing/bugs
+
+    - Attach patches as a file to bug
+    - Set 'patch-required' tag
+    - Set '1.17' tag (version should be whatever version patches apply to)
+
+    ## Publisher
+
+    ### Building
+
+    - Grab latest tarball (if multiple exists)
+    - Run patch-request job
+    - Push to a hotfix branch in snap store
+
+    ### Update launchpad bug
+
+    - Post location of snap
+    - Post location of snap builder logs
+    - Remove 'patch-required'
+    - Add 'patch-done'
+
+    ### Rebuilding
+
+    If a patch fails to apply or the snaps fail to build, do the following:
+
+    - Upload new tarball
+    - Set 'patch-retry' tag

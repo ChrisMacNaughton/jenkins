@@ -12,12 +12,12 @@ import tempfile
 import requests
 from sh.contrib import git
 from urllib.parse import urlparse
-from jinja2 import Template
 from pathlib import Path
 from pymacaroons import Macaroon
 from cilib import lp, idm, snapapi, k8s
 from cilib.git import remote_branches, branch_exists, remote_tags
 from cilib.run import cmd_ok, capture
+from cilib import template
 from pprint import pformat
 
 
@@ -30,13 +30,6 @@ K8S_GO_MAP = {
     "1.14": "go/1.12/stable",
     "1.13": "go/1.12/stable",
 }
-
-
-def _render(tmpl_file, context):
-    """ Renders a jinja template with context
-    """
-    template = Template(tmpl_file.read_text(), keep_trailing_newline=True)
-    return template.render(context)
 
 
 @click.group()
@@ -233,7 +226,7 @@ def _create_branch(repo, from_branch, to_branch, dry_run, force, patches):
     k8s_major_minor = f"{k8s_major_minor['major']}.{k8s_major_minor['minor']}"
 
     snapcraft_yml = snapcraft_fn_tpl.read_text()
-    snapcraft_yml = _render(
+    snapcraft_yml = template.render(
         snapcraft_fn_tpl,
         {
             "snap_version": to_branch.lstrip("v"),
